@@ -4,6 +4,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 
 // load up the user model
 var User       = require('../app/models/user');
+var Ngo        = require('../app/models/ngo');
 
 // load the auth variables
 var configAuth = require('./auth'); // use this one for testing
@@ -29,9 +30,9 @@ module.exports = function(passport){
     });
 
     // =========================================================================
-    // LOCAL LOGIN =============================================================
+    // LOCAL USER LOGIN =============================================================
     // =========================================================================
-    passport.use('local-login', new LocalStrategy({
+    passport.use('local-user-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
         passwordField : 'password',
@@ -45,28 +46,37 @@ module.exports = function(passport){
         process.nextTick(function() {
             User.findOne({ 'local.email' :  email }, function(err, user) {
                 // if there are any errors, return the error
-                if (err)
+                if (err){
+                    console.log("Error encountered",err);
                     return done(err);
+                }
 
                 // if no user is found, return the message
-                if (!user)
+                if (!user){
+                    console.log('User not found');
                     return done(null, false, req.flash('loginMessage', 'No user found.'));
+                }
 
                 if (!user.validPassword(password))
+                {
+                    console.log('Wrong password');
                     return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+                }
 
                 // all is well, return user
-                else
+                else{
+                    console.log('Successfully Authenticated',user);
                     return done(null, user);
+                }
             });
         });
 
     }));
 
     // =========================================================================
-    // LOCAL SIGNUP ============================================================
+    // LOCAL USER SIGNUP ============================================================
     // =========================================================================
-    passport.use('local-signup', new LocalStrategy({
+    passport.use('local-user-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
         passwordField : 'password',
@@ -75,7 +85,7 @@ module.exports = function(passport){
     function(req, email, password, done) {
         if (email)
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
-
+        console.log(req);
         // asynchronous
         process.nextTick(function() {
             // if the user is not already logged in:
@@ -92,7 +102,7 @@ module.exports = function(passport){
 
                         // create the user
                         var newUser            = new User();
-
+                        newUser.local.name = req.user.name;
                         newUser.local.email    = email;
                         newUser.local.password = newUser.generateHash(password);
 
@@ -162,6 +172,8 @@ module.exports = function(passport){
                         return done(err);
 
                     if (user) {
+                        
+                        console.log(user);
 
                         // if there is a user id already but no token (user was linked at one point and then removed)
                         if (!user.facebook.token) {

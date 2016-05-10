@@ -13,7 +13,12 @@ var path = require('path');
 var dbConfig = require('./config/database.js');
 mongoose.connect(dbConfig.url);
 
-require('./config/passport')(passport);
+// ================ PASSPORT CONFIG ==================
+var authUser = new passport.Passport();
+var authNgo = new passport.Passport();
+require('./config/userpassport')(authUser);
+//require('./config/ngopassport')(authNgo);
+
 
 var app = express();
 
@@ -31,20 +36,21 @@ app.set('view engine', 'handlebars');
 // ================ PASSPORT SETUP ================
 app.use(session({
     secret: 'BoogeyMcBoogeyBoog',
-    resave: true,
+    resave: false,
     saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());
 
-require('./app/routes/login.js')(app,passport);
+require('./app/routes/login.js')(app,authUser);
+//require('./app/routes/ngo.js')(app,authNgo);
 
 app.get('/', function (req, res) {
     res.render('home');
 });
-app.get('/signup',function(req,res){
-    res.render('signup');  
+app.get('/user/signup',function(req,res){
+    res.render('usersignup');  
 });
 
 app.listen(3000);

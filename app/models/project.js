@@ -1,32 +1,31 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
 
-var ngoSchema = mongoose.Schema({
-        name : {
+var projectSchema = mongoose.Schema({
+        Name : {
             type : String,
             required : true
         },
-		email : {
+		Email : {
             type : String,
             required : true
         },
-        description : {
+        Description : {
             type : String,
             required : true
         },
-        foundationYear : {
+        FoundationYear : {
             type : Number,
             required : true
         },
-        address : {
+        Address : {
             type : String,
             required : true
         },
-        cities : {
+        Cities : {
             type: [String], 
             index: true
         },
-        causes : {
+        Causes : {
             type: [String], 
             index: true
         },
@@ -35,15 +34,5 @@ var ngoSchema = mongoose.Schema({
              required : true
          }
 });
-
-// generating a hash
-ngoSchema.methods.generateHash = function(password){
-	return bcrypt.hashSync(password,bcrypt.genSaltSync(8),null);
-};
-
-// check if password is valid
-ngoSchema.methods.validPassword = function(password){
-	return bcrypt.compareSync(password,this.local.password);
-};
 
 module.exports = mongoose.model('Ngo',ngoSchema);
