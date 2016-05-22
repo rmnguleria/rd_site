@@ -15,7 +15,7 @@ mongoose.connect(dbConfig.url);
 
 // ================ PASSPORT CONFIG ==================
 var authUser = new passport.Passport();
-var authNgo = new passport.Passport();
+//var authNgo = new passport.Passport();
 require('./config/userpassport')(authUser);
 //require('./config/ngopassport')(authNgo);
 
@@ -39,12 +39,12 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
+app.use(authUser.initialize());
+app.use(authUser.session()); // persistent login sessions
 app.use(flash());
 
 require('./app/routes/login.js')(app,authUser);
-//require('./app/routes/ngo.js')(app,authNgo);
+require('./app/routes/ngo.js')(app,authUser);
 
 app.get('/', function (req, res) {
     res.render('home');

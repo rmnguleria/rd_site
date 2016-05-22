@@ -1,5 +1,5 @@
     <!-- SIGNUP FORM -->
-    <form action="/user/signup" method="post">
+<form action="/user/signup" method="post">
         <div class="form-group">
             <label>Name</label>
             <input type="text" class="form-control" name="name" required="required">
@@ -12,7 +12,17 @@
             <label>Password</label>
             <input type="password" class="form-control" name="password" required="required">
         </div>
+        
+        <div class="g-recaptcha" data-sitekey="6Ldo8R8TAAAAAJ4pKNosmbmx7sunJtZjxDQgZaRJ"></div>
+        <br/>
+
 
         <button type="submit" class="btn btn-warning btn-lg">Signup</button>
     </form>
     <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
+    
+    <ul>
+        <li><a href="/signup" data-toggle="tab">Sign Up</a></li>
+        <li><a href="/login" data-toggle="tab">Login</a></li>
+    </ul>
+    

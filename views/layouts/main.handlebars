@@ -5,30 +5,36 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> ReconnectingDots - Discover yourself </title>
-        <link href="stylesheets/main.css" rel="stylesheet">
+        <link href="/stylesheets/main.css" rel="stylesheet">
+        <script src="//www.google.com/recaptcha/api.js" async defer></script>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     </head>
     <body>
-        <div class="container">
-            <header class="header clearfix">
-                <nav>
-                    <ul class="nav nav-pills pull-right">
-                        <li role="presentation" class="active"><a href="/">Home</a></li>
-                        <li role="presentation"><a href="/">About</a></li>
-                        <li role="presentation"><a href="/user/signup">SignUp</a></li>
-                    </ul>
+                <nav class="navbar navbar-default navbar-static-top">
+                    <div class="container">
+                    <a class="navbar-brand" href="/">ReconnectingDots</a>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/ngo">Organizations</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li role="presentation" class="active"><a href="/">Home</a></li>
+                            <li role="presentation"><a href="/">About</a></li>
+                            <li role="presentation"><a href="/user/signup">SignUp</a></li>
+                        </ul>
+                    </div>    
+                    </div>
                 </nav>
-                <h3 class="text-muted">Reconnecting Dots</h3>
-            </header>
             
-                {{{body}}}
+                    {{{body}}}
                 
             <footer class="footer">
                 <p>&copy; 2016 Reconnecting Dots</p>
             </footer>
-        </div>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script src="/javascript/main.js" async defer></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js" async defer></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" async defer integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
         
     </body>
     

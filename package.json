@@ -3,6 +3,8 @@
   "main": "server.js",
   "private": true,
   "dependencies": {
+    "async": "^2.0.0-rc.5",
+    "aws-sdk": "^2.3.11",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.1",
     "connect-flash": "^0.1.1",

@@ -1,17 +1,40 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
+var userTypes = ['user','admin'];
+
 var userSchema = mongoose.Schema({
+	name : {
+		type : String,
+		required : true
+	},
+	email : {
+		type : String,
+		required : true
+	},
 	local : {
-        name : String,
-		email : String,
-		password : String
+		password : {
+			type : String
+		}
 	},
 	facebook : {
-		id : String,
-		token : String,
-		email : String,
-		name : String
+		id : {
+			type : String,
+		},
+		token : {
+			type : String
+		}
+	},
+	createDate : {
+		type : Date,
+		default : Date.now,
+		required : true
+	},
+	userType : {
+		type : String,
+		required : true,
+		enum : userTypes,
+		default : userTypes[0]
 	}
 });
 

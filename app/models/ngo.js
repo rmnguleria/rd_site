@@ -6,21 +6,42 @@ var ngoSchema = mongoose.Schema({
             type : String,
             required : true
         },
+        profileImage : {
+            type : String
+        },
 		email : {
             type : String,
             required : true
         },
         description : {
-            type : String,
-            required : true
+            type : String
         },
         foundationYear : {
-            type : Number,
-            required : true
+            type : Number
         },
-        address : {
-            type : String,
-            required : true
+        reg_address : {
+            
+            address : {
+                type : String,
+                required : true
+            },
+            pincode : {
+                type : Number,
+                required : true
+            },
+            city : {
+                type : String,
+                required : true
+            },
+            state : {
+                type : String,
+                required : true
+            },
+            country : {
+                type : String,
+                required : true,
+                default : "India"
+            }
         },
         cities : {
             type: [String], 
@@ -30,20 +51,16 @@ var ngoSchema = mongoose.Schema({
             type: [String], 
             index: true
         },
- 		password : {
-             type: String,
+         createDate : {
+             type : Date,
+             default : Date.now,
+             required : true
+         },
+         verified : {
+             type : Boolean,
+             default : false,
              required : true
          }
 });
-
-// generating a hash
-ngoSchema.methods.generateHash = function(password){
-	return bcrypt.hashSync(password,bcrypt.genSaltSync(8),null);
-};
-
-// check if password is valid
-ngoSchema.methods.validPassword = function(password){
-	return bcrypt.compareSync(password,this.local.password);
-};
 
 module.exports = mongoose.model('Ngo',ngoSchema);

@@ -42,35 +42,43 @@ module.exports = function(passport){
         if (email)
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
 
-        // asynchronous
-        process.nextTick(function() {
-            User.findOne({ 'local.email' :  email }, function(err, user) {
+            User.findOne({ 'email' :  email }, function(err, user) {
                 // if there are any errors, return the error
                 if (err){
-                    console.log("Error encountered",err);
+                    console.log(Date() + "Error encountered",err);
                     return done(err);
                 }
 
                 // if no user is found, return the message
                 if (!user){
-                    console.log('User not found');
+                    console.log(Date() + 'User not found');
                     return done(null, false, req.flash('loginMessage', 'No user found.'));
                 }
 
                 if (!user.validPassword(password))
                 {
-                    console.log('Wrong password');
+                    console.log(Date() + 'Wrong password');
                     return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
                 }
 
                 // all is well, return user
+                else if(req.route.path === "/ngo/login"){
+                    Ngo.findOne({'email':email},function(err,ngo){
+                           if(err){
+                               console.log(Date() + "Error encountered " , err);
+                               return done(err);
+                           } 
+                           if(!ngo){
+                               return done(null,false,req.flash('loginMessage','No user found'));
+                           }
+                           return done(null,user);
+                        });
+                }
                 else{
-                    console.log('Successfully Authenticated',user);
+                    console.log(Date() + 'Successfully Authenticated',user);
                     return done(null, user);
                 }
             });
-        });
-
     }));
 
     // =========================================================================
@@ -85,41 +93,72 @@ module.exports = function(passport){
     function(req, email, password, done) {
         if (email)
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
-        console.log(req);
+        
+        //console.log("Request Object",req.route);
+ 
         // asynchronous
         process.nextTick(function() {
             // if the user is not already logged in:
             if (!req.user) {
-                User.findOne({ 'local.email' :  email }, function(err, user) {
+                console.log(Date() + "User is not already logged in");
+                
+                User.findOne({ 'email' :  email }, function(err, user) {
                     // if there are any errors, return the error
-                    if (err)
+                    if (err){
+                        console.log(Date() + "Error encountered while searching user",err);
                         return done(err);
+                    }
 
                     // check to see if theres already a user with that email
                     if (user) {
+                        console.log(Date() + "Email already taken",user);
                         return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
                     } else {
 
+                         console.log(Date() + "New user to be created");
                         // create the user
                         var newUser            = new User();
-                        newUser.local.name = req.user.name;
-                        newUser.local.email    = email;
+                        newUser.name = req.body.name;
+                        newUser.email    = email;
                         newUser.local.password = newUser.generateHash(password);
+                        
+                        if(req.route.path=='/ngo/signup'){
+                            newUser.userType = 'admin';
+                            
+                            var newNgo = new Ngo();
+                            newNgo.name = req.body.name;
+                            newNgo.email = email;
+                            newNgo.reg_address.address = req.body.address;
+                            newNgo.reg_address.pincode = req.body.pincode;
+                            newNgo.reg_address.city = req.body.city;
+                            newNgo.reg_address.state = req.body.state;
+                            
+                            newNgo.save(function(err){
+                               if(err){
+                                   console.log(Date()() + "Error encountered while saving ngo",err);
+                                   return done(err);
+                               }
+                            });
+                            
+                        }
 
                         newUser.save(function(err) {
                             if (err)
+                            {
+                                console.log(Date() + "Error encountered while saving user",err);
                                 return done(err);
-
+                            }
+                            console.log(Date() + "New user created",newUser);
                             return done(null, newUser);
                         });
                     }
 
                 });
             // if the user is logged in but has no local account...
-            } else if ( !req.user.local.email ) {
+            } else if ( !req.user.email ) {
                 // ...presumably they're trying to connect a local account
                 // BUT let's check if the email used to connect a local account is being used by another user
-                User.findOne({ 'local.email' :  email }, function(err, user) {
+                User.findOne({ 'email' :  email }, function(err, user) {
                     if (err)
                         return done(err);
                     
@@ -127,14 +166,19 @@ module.exports = function(passport){
                         return done(null, false, req.flash('loginMessage', 'That email is already taken.'));
                         // Using 'loginMessage instead of signupMessage because it's used by /connect/local'
                     } else {
-                        var user = req.user;
-                        user.local.email = email;
-                        user.local.password = user.generateHash(password);
-                        user.save(function (err) {
+                        var newUser = req.user;
+                        newUser.email = email;
+                        newUser.local.password = user.generateHash(password);
+                        
+                        if(req.route.path=='/ngo/signup'){
+                            newUser.userType = 'admin';
+                        }
+                        
+                        newUser.save(function (err) {
                             if (err)
                                 return done(err);
-                            
-                            return done(null,user);
+                            console.log(Date() + "New user created",newUser);
+                            return done(null,newUser);
                         });
                     }
                 });
@@ -160,11 +204,11 @@ module.exports = function(passport){
 
     },
     function(req, token, refreshToken, profile, done) {
-
         // asynchronous
         process.nextTick(function() {
 
             // check if the user is already logged in
+             console.log(Date() + "Facebook Profile " + profile.cover);
             if (!req.user) {
 
                 User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
@@ -178,8 +222,8 @@ module.exports = function(passport){
                         // if there is a user id already but no token (user was linked at one point and then removed)
                         if (!user.facebook.token) {
                             user.facebook.token = token;
-                            user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
-                            user.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                            user.name  = profile.name.givenName + ' ' + profile.name.familyName;
+                            user.email = (profile.emails[0].value || '').toLowerCase();
 
                             user.save(function(err) {
                                 if (err)
@@ -196,13 +240,13 @@ module.exports = function(passport){
 
                         newUser.facebook.id    = profile.id;
                         newUser.facebook.token = token;
-                        newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
-                        newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                        newUser.name  = profile.name.givenName + ' ' + profile.name.familyName;
+                        newUser.email = (profile.emails[0].value || '').toLowerCase();
 
                         newUser.save(function(err) {
                             if (err)
                                 return done(err);
-                                
+                            
                             return done(null, newUser);
                         });
                     }
@@ -214,13 +258,13 @@ module.exports = function(passport){
 
                 user.facebook.id    = profile.id;
                 user.facebook.token = token;
-                user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
-                user.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                user.name  = profile.name.givenName + ' ' + profile.name.familyName;
+                user.email = (profile.emails[0].value || '').toLowerCase();
 
                 user.save(function(err) {
                     if (err)
                         return done(err);
-                        
+                    console.log(Date() + "New user created",newUser);    
                     return done(null, user);
                 });
 

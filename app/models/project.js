@@ -1,38 +1,27 @@
 var mongoose = require('mongoose');
 
 var projectSchema = mongoose.Schema({
-        Name : {
+        name : {
+          type : String,
+          required : true  
+        },
+        ngo : {
             type : String,
             required : true
         },
-		Email : {
+        causes : {
+            type : [String],
+            required : true
+        },
+        description : {
             type : String,
             required : true
         },
-        Description : {
-            type : String,
-            required : true
-        },
-        FoundationYear : {
-            type : Number,
-            required : true
-        },
-        Address : {
-            type : String,
-            required : true
-        },
-        Cities : {
-            type: [String], 
-            index: true
-        },
-        Causes : {
-            type: [String], 
-            index: true
-        },
- 		password : {
-             type: String,
-             required : true
-         }
+	    createDate : {
+		    type : Date,
+		    default : Date.now,
+		    required : true
+	    }
 });
 
-module.exports = mongoose.model('Ngo',ngoSchema);
+module.exports = mongoose.model('Project',ngoSchema);
